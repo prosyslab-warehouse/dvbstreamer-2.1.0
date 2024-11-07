@@ -1,0 +1,36 @@
+# ------------------------------------------------------------------------
+# r803 | charrea6 | 2011-07-04 21:11:12 +0200(lun, 04 lug 2011) | 1 line
+# 
+# #3216277 - string comparison
+# ------------------------------------------------------------------------
+Index: trunk/src/services.c
+===================================================================
+--- trunk/src/services.c	(revisione 802)
++++ trunk/src/services.c	(revisione 803)
+@@ -204,7 +204,7 @@
+     STATEMENT_STEP();
+     if (rc == SQLITE_DONE)
+     {
+-        if (name != service->name)
++        if (!service->name || strcmp(name,service->name))
+         {
+             if (service->name)
+             {
+@@ -307,7 +307,7 @@
+     STATEMENT_STEP();
+     if (rc == SQLITE_DONE)
+     {
+-        if (provider != service->provider)
++        if (!service->provider || strcmp(provider,service->provider))
+         {
+             if (service->provider)
+             {
+@@ -338,7 +338,7 @@
+     STATEMENT_STEP();
+     if (rc == SQLITE_DONE)
+     {
+-        if (defaultAuthority != service->defaultAuthority)
++        if (!service->defaultAuthority || strcmp(defaultAuthority,service->defaultAuthority))
+         {
+             if (service->defaultAuthority)
+             {

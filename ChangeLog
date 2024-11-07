@@ -1,0 +1,211 @@
+2.0.0rc2
+------
+* Fix bug in service filters where if no previous primary service/multiplex had
+   been selected dvbstreamer would segfault. Reported by Ivan Asenov
+* Fix bug when scanning same multiplex twice cause dvbstreamer to segfault.
+  Reported by Ivan Asenov
+* Fix bug when attempting to exit dvbstreamer, dvbstreamer hangs. This was 
+  caused by a change in behaviour of libev. Reported by Ivan Asenov
+
+2.0.0rc1
+-------
+* All commands now must have channels names enclosed in quotes if the name 
+  includes spaces.
+* New scanning feature
+   - Can now perform a full spectrum scan (ATSC, DVB-C/T)
+   - Can now perform a network scan using information from dvb-utils (All)
+* New properties API and commands allows easier access to internal properties.
+  (vars are now deprecated.)
+* Deprecated the Enumerator APIs for DB access and replaced with APIs that
+   return a list, this is to prevent the database being locked by a running query
+   that hasn't been finalised.
+* Ability to release (and reacquire) the frontend to save energy.
+* Fix [2377653] ATSC EPG xmltv output shows programs on wrong channel
+* Added [2629610] epgtoxmltv patch to output seriesid and programid in UK EPG
+* Added support for extended event descriptors in EITs. (Test stream supplied by Tom Albers)
+* Complete rewrite of the packet/section filtering code improving readability and performance.
+* Remove libltdl from the packaged source. (see bug 2951692)
+* Added filea:// mrl handler to append to data to existing files.
+* Added pipe:// mrl handler to send data to named fifos
+* Added DVB-S2 support
+* Added DSMCC client (beta) to download files broadcast in a DSMCC object carousel.
+* Started to make output from commands YAML compliant to ease work on writing bindings.
+
+1.0
+---
+* New Plugin - Traffic Monitor/Capture (thanks to Steve VanDeBogart)
+* New Event framework to allow monitoring of events like signal lock, service 
+   addition/removal by an external client.
+* Wildcard query added for lsservices, use ls -q <query> to list all services that match <query>
+   For example ls -q BBC% would list all BBC channels under freeview.
+* Bug Fixed:
+    1884368 festatus command doesn't work on DVB-S (patch supplied)
+    1870354 The list add functions aren't completely implemented.
+    1870351 rmsf will leak file descriptors when using file://
+    1870353 rmsf seems to have a double free bug
+    1887166 Additional TSPacket_t header macros
+    1880738 Allow comments in script files
+    1885966 Foreground Daemon mode
+    1875269 Segmentation Fault during DVB-S streaming
+    1856827 'dumpxmltv' from remote interface causes DVBStreamer to exit
+    1889789 Traffic plugin does work (printf) while blocking TS thread
+    1948144 Segfault on exit when in foreground daemon mode
+    1952127 Segfault on invalid adapter number
+    1961030 SAP session id not unique
+    
+0.9
+---
+* SAP support for multicast UDP and RTP streams.
+* ATSC EPG now fully working, includes event descriptions.
+* Multiple dumpxmltv bugs fixed.
+* 3 NEW plugins
+  - QueryEPG  - Allows querying of EPG database for more details and on a finer 
+                grain than dumpxmltv.
+  - SICapture - This plugin is intend to aid debugging of streams that I don't 
+                have access to by allowing a user to capture just the PSI and 
+                DVB SI or ATSCPSIP information for attaching to a bug report etc.
+  - ManualFilters - The 'manual output' feature has been removed from the core
+                    and renamed to avoid confusion and make DVBStreamer more modular.
+* Services can now be selected/queried by fully qualified id (network id.ts id.service id)
+* New commands to simplify setting and getting the primary mrl.
+* Command output has been cleaned up to make it more consistent.
+* setsfavsonly command now includes the CAT table if required for a service.
+* Internally
+  - There is a new Deferred Procedure module and a thread safe message queue.
+  - The included dvbpsi library has been updated to 0.16.
+* Bugs fixed:
+    1842675 'now' command, EPG info incorrectly displaying start time.
+    1823706	sdtprocessor.c segfault [patch supplied]
+    1819913	date command has no space/return before 'Last received'
+    1841275 Correct length in UTF8 encoding
+    1841279 Xmlify service name in xmltv epg
+
+0.8 
+---
+* DVB-S fully supported, thanks to Alex Luccisano.
+* ATSC support, including preliminary EPG.
+* DVB EPG support, now captures schedule data and can be exported to xmltv format.
+* RTP support and Time To Live setting for UDP and RTP packets useful when sending
+  to a multicast address.
+* All text output by dvbstreamer is now in UTF-8, this includes channel names and EPG data.
+* Lots of clean up in the code structure.
+* Fixed major virtual memory bug.
+* Turned on -Wall -Werror
+
+0.7
+---
+* NEW Simpler remote interface means that it is possible to execute all commands 
+  remotely, no need to use the dvbctrl command 'quote' any more.
+* NEW plugins:
+   - Date/Time plugin  - Simple plugin to print out the UTC date and time
+   - Now/Next plugin   - Plugin to display the present show EPG info and what comes next.
+   - PES Extract plugin- Example plugin to show/test how to use the PESProcessor features.
+                         (You can now extract a single pid to a PES ie a DVB radio channel to an MP3 file.)
+   - LCN Query plugin  - Plugin to find a service that is allocated to a logical channel number, can
+                         also display all logical channel numbers and their service names.
+* Separated out the setup component from dvbstreamer to a new app to prevent confusing users
+  into always providing the channels.conf file.
+* Reworked internal command processing means all commands can tell if the user 
+  has entered a valid username/password
+* Structure member rename to make sure all structures follow the camel case convention.
+* New object based memory allocation system to help debugging and prevent memory leaks.
+* Remove need for libdvbpsi, now included (heavily patched)
+
+
+0.6
+---
+* New scan command, to rescan a specific multiplex for changes.
+* New setsfavsonly command, to enable streaming of only the audio/video/subtitle pids.
+  Also rewrites the services PMT to only include these.
+* Database changes
+    - Descriptors now stored for PIDs in a service.
+    - PCR pid moved into Services table from PIDs table.
+* Bugs fixed.
+    - Memory leak in cache.c
+    - service deletion bug in cache.c
+    - other stability fixes I've forgotten about :-)
+* File output changed to use fopen64 for large file support (files greater than 2GB)
+
+
+0.5
+---
+* Plugins! They can add commands, delivery methods, PMT/PAT processors and
+  channel change callbacks.
+* Ability to change the output destination after creating a service filter or
+  manual output.
+* New delivery methods, currently only udp://<ip address>:<port>(which was
+  already there :-) ), null:// (which just throws away the packets) and 
+  file://<filename>
+* Several new commands, including:
+  - lsservices = Replaces services command and can list all the service/
+                 only the services on the current multiplex/only the services
+                 on a specified multiplex.
+  - lsmuxes = lists all the available multiplex.
+  - lsplugins = Lists loaded plugins
+  - plugininfo = Displays information on a specific plugin.
+* Was using a char for getopt instead of an int, now fixed.
+* Version number updated.
+* Most header files are now documented.
+* New list structure means there is no limit (apart from memory and CPU
+  bandwidth) on the number of filters/outputs you can add.
+* Service name filtering, it is now possible to remove unprintable
+  characters from service names by using the -F <chararcter to use instead>
+  option.
+* !!!NOTE!!! Binary protocol change (slightly) to remove SSLA and SSLM and
+  replaced with 1 message that takes a multiplex. Also 2 other new messages to
+  get the current multiplex and another to list the available multiplexes.
+* Bugs Fixed.
+  - 1548113 Command line processing on PPC doesn't work
+  - 1538096 Not possible to specify log file destination
+  - Seg fault on exit fixed.
+  - Removing service no longer in the transport stream, only some where removed
+    but not all.
+  - Service names getting corrupted by repeated cache writebacks.
+  - Removed annoying warning from libdvbpsi about TS discontinuity after a
+    multiplex change.
+
+0.4
+---
+* Daemon mode, can now run dvbstreamer in the background and use dvbctrl to
+  control/monitor it.
+* Secondary service filters, allows more than 1 service to be streamed (each
+  to separate IP Address:Ports).
+* Signal handling (No exit in a nice clean manner, making sure the database is
+  updated).
+* IPv6 support added. (Thanks again Tero)
+* Minor name changes to commands (mostly commands that list things now start
+  with ls, mostly :-) )
+* Minor change to behaviour, dvbstreamer now no longer waits for the signal to
+  lock before returning from a command, useful when you have a low siganl
+  strength/high noise problem!
+
+0.3
+---
+* Command completion.
+* Automatic service addition/removal, new service are automatically added
+  to the database and services no longer signaled in the PAT are removed.
+* All TS pid (use pid 8192 when adding a pid to a manual output to get the
+  entire TS)
+* Added SDT processing, can now get/update services names.
+* Refactored service filter and PAT/PMT handling so now PAT and PMT processor
+  only process the incoming PAT/PMT and service filter actually does the PAT
+  rewrite (should allow more than 1 service filter in the future).
+* Add DVB-S/C support (database has now changed slightly although shouldn't
+  affect anyone upgrading from 0.2)
+* Fixed bug in cache.c when PAT version changed.
+* Several patches from Tero Pelander - Thanks! (including Bug ID 1487683)
+
+0.2
+---
+* Added some new commands
+* Rewrote the TS filter callbacks todo more what they say they do. ie filter
+  now returns a bool, process now returns a packet or null, and output just
+  sends the packets.
+* Fixed a couple of memory leaks where I wasn't freeing the PSI sections after
+  using them.
+* Continued general tidying up the project directory and getting to know
+  subversion better.
+
+0.1
+---
+Initial release.

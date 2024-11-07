@@ -1,0 +1,20 @@
+# ------------------------------------------------------------------------
+# r804 | charrea6 | 2011-07-04 21:13:38 +0200(lun, 04 lug 2011) | 1 line
+# 
+# #3216228 - collection header alignment
+# ------------------------------------------------------------------------
+Index: trunk/include/objects.h
+===================================================================
+--- trunk/include/objects.h	(revisione 803)
++++ trunk/include/objects.h	(revisione 804)
+@@ -39,7 +39,10 @@
+  * A collection of entries with a count.
+  */
+ typedef struct ObjectCollection_s{
++    union{
+     unsigned int nrofEntries; /**< Number of entries in the collection */
++    void *__forceAlignment; /* Used to fix issues of alignment on 64bit systems */
++    };
+ }ObjectCollection_t;
+ 
+ /**

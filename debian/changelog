@@ -1,0 +1,130 @@
+dvbstreamer (2.1.0-5.4) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * d/rules: Remove libtoolize behaviour change (Closes: #996480).
+  * Modify patch svn_809.diff to get rid of ev_loop checking.
+  * Drop patch svn_815.diff (also changes ev_loop).
+
+ -- Bastian Germann <bage@debian.org>  Sat, 16 Oct 2021 10:37:38 +0200
+
+dvbstreamer (2.1.0-5.3) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Make the build reproducible (Closes: #976826).
+
+ -- Bastian Germann <bage@debian.org>  Thu, 14 Oct 2021 15:03:16 +0200
+
+dvbstreamer (2.1.0-5.2) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Use libeditreadline-dev and drop libedit patches.
+  * Drop non-existing Vcs-Git.
+
+ -- Bastian Germann <bage@debian.org>  Thu, 14 Oct 2021 09:32:55 +0200
+
+dvbstreamer (2.1.0-5.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Build with libedit (Closes: #966143).
+
+ -- Bastian Germann <bastiangermann@fishpost.de>  Sat, 05 Dec 2020 14:21:16 +0100
+
+dvbstreamer (2.1.0-5) unstable; urgency=low
+
+  * bump to SVN 819
+
+ -- A Mennucc1 <mennucc1@debian.org>  Sun, 29 Dec 2013 15:08:23 +0100
+
+dvbstreamer (2.1.0-4) unstable; urgency=low
+
+  *  add export-dir=../build-area to debian/gpb.conf
+    otherwise at every build the auto* machinery messes the repository
+
+ -- A Mennucc1 <mennucc1@debian.org>  Thu, 08 Aug 2013 12:28:40 +0200
+
+dvbstreamer (2.1.0-3) unstable; urgency=low
+
+  * thanks everybody for the precious NMUs
+  * create collab-maint git repo
+  * bump standards version, no changes
+
+ -- A Mennucc1 <mennucc1@debian.org>  Sat, 03 Aug 2013 17:11:34 +0200
+
+dvbstreamer (2.1.0-2.4) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Fix "FTBFS: libtool: Version mismatch error.":
+    add patch from Ubuntu / Logan Rosen to use autoreconf.
+    (Closes: #713525)
+
+ -- gregor herrmann <gregoa@debian.org>  Fri, 05 Jul 2013 14:12:47 +0200
+
+dvbstreamer (2.1.0-2.3) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Fix "FTBFS": add patch pkgincludedir.patch to fix the Makefile.ams.
+    (Closes: #661448)
+  * debian/rules: empty dependency_libs in .la files.
+
+ -- gregor herrmann <gregoa@debian.org>  Mon, 12 Mar 2012 20:37:49 +0100
+
+dvbstreamer (2.1.0-2.2) unstable; urgency=low
+
+  * NMU
+  * Fix immense fragility of libtool/cdbs usage. Ick. Closes: #652369
+  * Tweak how the no_ncurses patch works - define READLINE_TERMCAP empty
+    rather than leaving it out.
+
+ -- Steve McIntyre <steve.mcintyre@linaro.org>  Wed, 21 Dec 2011 17:09:24 +0000
+
+dvbstreamer (2.1.0-2.1) unstable; urgency=low
+
+  * NMU
+  * no_ncurses.patch: Don't look for or link against ncurses; it isn't
+    even used. (Closes: #646135)
+  * debian/control: Because the majority of dvbstreamer's source is
+    GPLv2, we must use libreadline-gplv2-dev as a build-dependency.
+  * Thanks to Daniel T Chen <seven.steps@gmail.com> for the patch.
+
+ -- Steve McIntyre <steve.mcintyre@linaro.org>  Fri, 16 Dec 2011 17:34:24 +0000
+
+dvbstreamer (2.1.0-2) unstable; urgency=low
+
+  * Bug fix: "FTBFS everywhere: configure: error: libev not found", thanks
+    to Cyril Brulebois & Stephen Kitt(Closes: #618786).
+
+ -- A Mennucc1 <mennucc1@debian.org>  Wed, 23 Mar 2011 14:39:59 +0100
+
+dvbstreamer (2.1.0-1) unstable; urgency=low
+
+  * New upstream release
+  * Bug fix: "DVBstreamer command mode hangs", thanks to David Liontooth
+    (Closes: #603991).
+
+ -- A Mennucc1 <mennucc1@debian.org>  Thu, 17 Mar 2011 22:55:12 +0100
+
+dvbstreamer (2.0.0rc1-1) experimental; urgency=low
+
+  * New upstream release
+
+ -- A Mennucc1 <mennucc1@debian.org>  Wed, 01 Sep 2010 16:29:31 +0200
+
+dvbstreamer (2~svn777-2) experimental; urgency=low
+
+  * Really add build dependency "libyaml-dev"
+
+ -- A Mennucc1 <mennucc1@debian.org>  Sun, 09 May 2010 22:16:35 +0200
+
+dvbstreamer (2~svn777-1) experimental; urgency=low
+
+  * Newer svn (2.0.0 rc)
+  * Add build dependency on "libsqlite3-dev", add "libyaml-dev"
+  * remove debian/dvstreamer.* cruft,, thanks Luca
+
+ -- A Mennucc1 <mennucc1@debian.org>  Sat, 08 May 2010 21:39:59 +0200
+
+dvbstreamer (2~svn770-1) experimental; urgency=low
+
+  * First packaging (Closes: #538728).
+
+ -- A Mennucc1 <mennucc1@debian.org>  Sat, 10 Apr 2010 10:10:08 +0200

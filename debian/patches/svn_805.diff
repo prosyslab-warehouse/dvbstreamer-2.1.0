@@ -1,0 +1,42 @@
+# ------------------------------------------------------------------------
+# r805 | charrea6 | 2011-07-04 22:36:11 +0200(lun, 04 lug 2011) | 1 line
+# 
+# #3216300 - uninitalized values
+# ------------------------------------------------------------------------
+Index: trunk/src/dvbadapter.c
+===================================================================
+--- trunk/src/dvbadapter.c	(revisione 804)
++++ trunk/src/dvbadapter.c	(revisione 805)
+@@ -1125,6 +1125,7 @@
+         else
+         {
+             struct dmx_pes_filter_params pesFilterParam;
++			memset(&pesFilterParam,0,sizeof(pesFilterParam));
+ 
+             LogModule(LOG_DEBUG, DVBADAPTER, "Filter fd %d\n", adapter->filters[idxToUse].demuxFd);
+ 
+Index: trunk/src/dvbpsi/descriptors/dr_4d.c
+===================================================================
+--- trunk/src/dvbpsi/descriptors/dr_4d.c	(revisione 804)
++++ trunk/src/dvbpsi/descriptors/dr_4d.c	(revisione 805)
+@@ -76,6 +76,8 @@
+     DVBPSI_ERROR("dr_4d decoder", "out of memory");
+     return NULL;
+   }
++  p_decoded->i_event_name[0]=0;
++  p_decoded->i_text[0]=0;
+ 
+   /* Decode data and check the length */
+   memcpy( p_decoded->i_iso_639_code, &p_descriptor->p_data[0], 3 );
+Index: trunk/src/dvbpsi/descriptors/dr_4e.c
+===================================================================
+--- trunk/src/dvbpsi/descriptors/dr_4e.c	(revisione 804)
++++ trunk/src/dvbpsi/descriptors/dr_4e.c	(revisione 805)
+@@ -69,6 +69,7 @@
+     DVBPSI_ERROR("dr_4e decoder", "out of memory");
+     return NULL;
+   }
++  memset(p_decoded->i_buffer,0,sizeof(p_decoded->i_buffer));
+ 
+   /* Decode */
+   p_decoded->i_descriptor_number = (p_descriptor->p_data[0] >> 4)&0xf;

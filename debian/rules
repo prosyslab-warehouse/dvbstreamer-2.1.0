@@ -1,0 +1,38 @@
+#!/usr/bin/make -f
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/rules/autoreconf.mk
+include /usr/share/cdbs/1/class/autotools.mk
+
+# where sources are
+#DEB_SRCDIR = $(CURDIR)/build
+#DEB_SRCDIR = trunk
+DEB_SRCDIR = .
+
+# in which directory to build
+#DEB_BUILDDIR = $(DEB_SRCDIR)/build
+#DEB_BUILDDIR = trunk
+DEB_BUILDDIR = .
+
+##test : it is not used DEB_CONFIGURE_EXTRA_FLAGS=--docdir=/usr/share/doc
+
+install/dvbstreamer::
+	## not needed, I patch into Makefile.am
+	#mkdir debian/dvbstreamer/usr/share
+	#mkdir debian/dvbstreamer/usr/share/doc
+	#mv debian/dvbstreamer/usr/doc/DVBStreamer debian/dvbstreamer/usr/share/doc/dvbstreamer
+	#rmdir debian/dvbstreamer/usr/doc
+
+
+	# GPL v2
+	rm debian/dvbstreamer/usr/share/doc/dvbstreamer/COPYING
+	#it is currently empty
+	rm debian/dvbstreamer/usr/share/doc/dvbstreamer/NEWS
+	#not needed in binary installs
+	rm debian/dvbstreamer/usr/share/doc/dvbstreamer/INSTALL
+
+	#empty dependency_libs
+	sed -i "/dependency_libs/ s/'.*'/''/" `find . -name '*.la'`
+
+	# strip build path
+	sed -i 's@^\(#define PACKAGE_SOURCE_DIR\) .*@\1 "/dummy"@' `find . -name 'config.h'`

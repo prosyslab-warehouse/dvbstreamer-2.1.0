@@ -1,0 +1,122 @@
+/* config.h.in.  Generated from configure.in by autoheader.  */
+
+/* DVBStreamer Major version number */
+#undef DVBSTREAMER_MAJOR
+
+/* DVBStreamer Micro version number */
+#undef DVBSTREAMER_MICRO
+
+/* DVBStreamer Minor version number */
+#undef DVBSTREAMER_MINOR
+
+/* Define this to plugins directory location */
+#undef DVBSTREAMER_PLUGINDIR
+
+/* Define this to plugin directory relative to execution prefix */
+#undef DVBSTREAMER_REL_PLUGINDIR
+
+/* DVBStreamer combined version number as an int */
+#undef DVBSTREAMER_VERSION
+
+/* Enable ATSC support */
+#undef ENABLE_ATSC
+
+/* Enable DVB support */
+#undef ENABLE_DVB
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#undef HAVE_DLFCN_H
+
+/* Frontend enum exists for 2G modulation */
+#undef HAVE_FE_CAN_2G_MODULATION
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `ev' library (-lev). */
+#undef HAVE_LIBEV
+
+/* Define to 1 if you have the `ltdl' library (-lltdl). */
+#undef HAVE_LIBLTDL
+
+/* Define to 1 if you have the `sqlite3' library (-lsqlite3). */
+#undef HAVE_LIBSQLITE3
+
+/* Define to 1 if you have the `yaml' library (-lyaml). */
+#undef HAVE_LIBYAML
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Support for variadic macros */
+#undef HAVE_VARIADIC_MACROS
+
+/* libiconv's prototype takes a const char * */
+#undef ICONV_INPUT_CAST
+
+/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
+#undef LT_OBJDIR
+
+/* Define to 1 if your C compiler doesn't accept -c and -o together. */
+#undef NO_MINUS_C_MINUS_O
+
+/* Name of package */
+#undef PACKAGE
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define this to data directory location */
+#undef PACKAGE_DATA_DIR
+
+/* Define this to Docs directory location */
+#undef PACKAGE_DOC_DIR
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define this to source directory location */
+#undef PACKAGE_SOURCE_DIR
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Use getaddrinfo for address resolution */
+#undef USE_GETADDRINFO
+
+/* Version number of package */
+#undef VERSION

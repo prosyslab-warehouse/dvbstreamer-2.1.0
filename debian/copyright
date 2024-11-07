@@ -1,0 +1,39 @@
+This package was debianized by mennucc1@debian.org on 10 Apr 2010
+
+It was downloaded from the main SVN repository, see
+  http://sourceforge.net/projects/dvbstreamer/
+
+Copyright Holder:
+   most of the code is
+    Copyright (C)2006-2010 Adam Charrett 
+   see below for exceptions.
+
+Contributors: see into trunk/README in source
+
+License:
+   most of the code is
+    GNU GENERAL PUBLIC LICENSE,   Version 2, June 1991
+    On Debian Linux systems, the complete text of the GNU General
+    Public License can be found in /usr/share/common-licenses/GPL-2.
+   see below for exceptions.
+
+=============== Exceptions.
+
+The file trunk/src/utf8.c is by Jeff Bezanson and
+   was placed in the public domain Fall 2005
+
+The file src/plugins/traffic.c is
+   Copyright (C) 2008  Steve VanDeBogart
+   and is licensed GPL v2 (or later)
+
+
+The code in trunk/src/dvbpsi is
+   Copyright: 2001-2008 VideoLAN
+   Authors: Johan Bilien <jobi@via.ecp.fr>
+            Arnaud de Bossoreille de Ribou <bozo@via.ecp.fr>
+            Johann Hanne
+            Laurent Aimar <fenrir@via.ecp.fr>
+	    Christophe Massiot <massiot@via.ecp.fr>
+            Derk-Jan Hartman <hartman at videolan dot org>
+	    Tristan Leteurtre <tristan.leteurtre@anevia.com>
+	    Pinkava Jiri <master_up@post.cz>

@@ -1,0 +1,292 @@
+dnl Process this file with autoconf to produce a configure script.
+
+dnl ---------------------------------------------------------------------------
+dnl Versioning Information:
+dnl     Increment Major more radical changes (ie re-writes)
+dnl     Increment Minor more additional features which don't break things
+dnl     Increment Micro when changes are only to fix bugs/build breaks no new features.
+dnl
+dnl     Exception to this rule is the Major version 0, minor version will be
+dnl     incremented until we are ready to say DVBStreamer is no longer alpha.
+dnl ---------------------------------------------------------------------------
+AC_INIT(dvbstreamer, 2.1.0)
+DVBSTREAMER_MAJOR=2
+DVBSTREAMER_MINOR=1
+DVBSTREAMER_MICRO=0
+
+AC_SUBST(DVBSTREAMER_MAJOR)
+AC_SUBST(DVBSTREAMER_MINOR)
+AC_SUBST(DVBSTREAMER_MICRO)
+
+AC_DEFINE_UNQUOTED(DVBSTREAMER_MAJOR, $DVBSTREAMER_MAJOR, [DVBStreamer Major version number])
+AC_DEFINE_UNQUOTED(DVBSTREAMER_MINOR, $DVBSTREAMER_MINOR, [DVBStreamer Minor version number])
+AC_DEFINE_UNQUOTED(DVBSTREAMER_MICRO, $DVBSTREAMER_MINOR, [DVBStreamer Micro version number])
+AC_DEFINE_UNQUOTED(DVBSTREAMER_VERSION, ((DVBSTREAMER_MAJOR<<24) | (DVBSTREAMER_MINOR<<16) | DVBSTREAMER_MICRO ), [DVBStreamer combined version number as an int])
+
+SPEC_VERSION=$DVBSTREAMER_MAJOR.$DVBSTREAMER_MINOR.$DVBSTREAMER_MICRO
+AM_INIT_AUTOMAKE("dvbstreamer", $SPEC_VERSION)
+
+AM_CONFIG_HEADER(config.h)
+
+AC_ISC_POSIX
+AC_PROG_CC
+AM_PROG_CC_STDC
+AC_HEADER_STDC
+AM_PROG_CC_C_O
+
+dnl ---------------------------------------------------------------------------
+dnl Disable strict aliasing 
+dnl ---------------------------------------------------------------------------
+CFLAGS="$CFLAGS -fno-strict-aliasing"
+
+dnl ---------------------------------------------------------------------------
+dnl Libltdl setup
+dnl ---------------------------------------------------------------------------
+LT_PREREQ([2.2.6])
+LT_INIT([dlopen win32-dll disable-static])
+
+dnl ---------------------------------------------------------------------------
+dnl Work out the libdir name (copied from xine-lib configure.ac)
+dnl ---------------------------------------------------------------------------
+AC_MSG_CHECKING([libdir name])
+case $host in
+*-*-linux*)
+ # Test if the compiler is 64bit
+ echo 'int i;' > conftest.$ac_ext
+ DVBSTREAMER_cv_cc_64bit_output=no
+ if AC_TRY_EVAL(ac_compile); then
+ case `"$MAGIC_CMD" conftest.$ac_objext` in
+ *"ELF 64"*)
+   DVBSTREAMER_cv_cc_64bit_output=yes
+   ;;
+ esac
+ fi
+ rm -rf conftest*
+ ;;
+esac
+
+case $host_cpu:$DVBSTREAMER_cv_cc_64bit_output in
+powerpc64:yes | s390x:yes | sparc64:yes | x86_64:yes)
+ DVBSTREAMER_LIBNAME="lib64"
+ ;;
+*:*)
+ DVBSTREAMER_LIBNAME="lib"
+ ;;
+esac
+AC_MSG_RESULT([$DVBSTREAMER_LIBNAME])
+
+dnl ---------------------------------------------------------------------------
+dnl ATSC/DVB Support
+dnl ---------------------------------------------------------------------------
+AC_ARG_ENABLE([atsc],
+	AS_HELP_STRING([--disable-atsc], [ Disable ATSC support, only use this if you know you don't need ATSC (most DVB users)  this will make the complied application a bit smaller, but won't make a big difference.]),
+	[case "${enableval}" in
+       	yes) enable_atsc=true ;;
+       	no)  enable_atsc=false ;;
+       	*) AC_MSG_ERROR([bad value ${enableval} for --disable-atsc]) ;;
+     	esac],[enable_atsc=true])
+
+AC_ARG_ENABLE([dvb],
+	AS_HELP_STRING([--disable-dvb], [ Disable DVB support, only use this if you know you don't need DVB (most ATSC users)  this will make the complied application a bit smaller, but won't make a big difference.]),
+	[case "${enableval}" in
+       	yes) enable_dvb=true ;;
+       	no)  enable_dvb=false ;;
+       	*) AC_MSG_ERROR([bad value ${enableval} for --disable-dvb]) ;;
+     	esac],[enable_dvb=true])
+
+if test "${enable_dvb}" == "false"; then
+	if test "${enable_atsc}" == "false"; then
+		AC_MSG_ERROR([Either ATSC or DVB needs to be enabled!])
+	fi
+fi
+
+AM_CONDITIONAL([ENABLE_ATSC], [test x$enable_atsc = xtrue])
+
+if test "${enable_atsc}" != "false"; then
+    AC_DEFINE(ENABLE_ATSC, 1, Enable ATSC support)
+fi
+
+AM_CONDITIONAL([ENABLE_DVB], [test x$enable_dvb = xtrue])
+
+if test "${enable_dvb}" != "false"; then
+    AC_DEFINE(ENABLE_DVB, 1, Enable DVB support)
+fi
+
+
+dnl ---------------------------------------------------------------------------
+dnl Misc. Enable args
+dnl ---------------------------------------------------------------------------
+AC_ARG_ENABLE([getaddrinfo],
+	AS_HELP_STRING([--disable-getaddrinfo], [ Disable use of the getaddrinfo function, this is needed for IPv6 support but some C libraries don't support it fully.]),
+	[case "${enableval}" in
+       	yes) use_getaddrinfo=true ;;
+       	no)  use_getaddrinfo=false ;;
+       	*) AC_MSG_ERROR([bad value ${enableval} for --disable-getaddrinfo]) ;;
+     	esac],[use_getaddrinfo=true])
+
+if test "${use_getaddrinfo}" != "false"; then
+    AC_DEFINE(USE_GETADDRINFO, 1, Use getaddrinfo for address resolution)
+fi
+
+AC_ARG_ENABLE([file-streamer],
+	AS_HELP_STRING([--enable-file-streamer], [ Enable building fdvbstreamer to allow play back of captured TS files.]),
+	[case "${enableval}" in
+       	yes) enable_fstreamer=true ;;
+       	no)  enable_fstreamer=false ;;
+       	*) AC_MSG_ERROR([bad value ${enableval} for --enable-file-streamer]) ;;
+     	esac],[enable_fstreamer=false])
+
+AM_CONDITIONAL([ENABLE_FSTREAMER], [test x$enable_fstreamer = xtrue])
+
+dnl ---------------------------------------------------------------------------
+dnl Check for sqlite 3
+dnl ---------------------------------------------------------------------------
+AC_CHECK_LIB([sqlite3], [sqlite3_libversion], [], [AC_MSG_FAILURE([sqlite3 not found])])
+LIBS=""
+
+dnl ---------------------------------------------------------------------------
+dnl Check for libreadline
+dnl ---------------------------------------------------------------------------
+AC_CHECK_HEADER([readline/readline.h], [], [AC_MSG_FAILURE([readline header file not found])])
+
+AC_CHECK_LIB([readline], [readline], [], [])
+
+AC_SUBST(READLINE_TERMCAP)
+
+LIBS=""
+
+dnl ---------------------------------------------------------------------------
+dnl Check whether librt is needed.
+dnl ---------------------------------------------------------------------------
+AC_SEARCH_LIBS(clock_gettime, [rt], [GETTIME_LIB=$LIBS], [AC_MSG_FAILURE([Failed to find a library defining clock_gettime])])
+
+AC_SUBST(GETTIME_LIB)
+
+LIBS=""
+
+dnl ---------------------------------------------------------------------------
+dnl Check whether libiconv is needed.
+dnl ---------------------------------------------------------------------------
+AC_SEARCH_LIBS(iconv_open, [iconv], [ICONV_LIB=$LIBS],
+	AC_SEARCH_LIBS(libiconv_open, [iconv], [ICONV_LIB=$LIBS], [AC_MSG_FAILURE([Failed to find a library defining iconv_open])]))
+
+AC_SUBST(ICONV_LIB)
+
+if test "x${ICONV_LIB}" == "x"; then
+    AC_DEFINE(ICONV_INPUT_CAST, [char **], [Glibc's prototype doesn't take a const char *])
+else
+    AC_DEFINE(ICONV_INPUT_CAST, [const char **], [libiconv's prototype takes a const char *])
+fi
+
+LIBS=""
+
+dnl ---------------------------------------------------------------------------
+dnl Check for libev
+dnl ---------------------------------------------------------------------------
+AC_CHECK_HEADER([ev.h], [], [AC_MSG_FAILURE([libev header file not found])])
+LIBS=""
+
+dnl ---------------------------------------------------------------------------
+dnl Check for yaml
+dnl ---------------------------------------------------------------------------
+AC_CHECK_HEADER([yaml.h], [], [AC_MSG_FAILURE([libyaml header file not found])])
+AC_CHECK_LIB([yaml], [yaml_get_version_string], [], [AC_MSG_FAILURE([libyaml not found])])
+LIBS=""
+
+dnl ---------------------------------------------------------------------------
+dnl Check for ltdl
+dnl ---------------------------------------------------------------------------
+AC_CHECK_HEADER([ltdl.h], [], [AC_MSG_FAILURE([libltdl (libtool) header file not found])])
+AC_CHECK_LIB([ltdl], [lt_dlinit], [], [AC_MSG_FAILURE([libltdl (libtool) not found])])
+LIBS=""
+
+dnl ---------------------------------------------------------------------------
+dnl Check for variadic macros
+dnl ---------------------------------------------------------------------------
+AC_CACHE_CHECK([for variadic cpp macros],
+    [ac_cv_cpp_variadic_macros],
+    [AC_TRY_COMPILE(
+         [#include <stdio.h>
+          #define a(b,c...) printf(b,##c)],
+         [a("foo");a("%s","bar");a("%s%s","baz","quux");],
+         ac_cv_cpp_variadic_macros=yes,
+         ac_cv_cpp_variadic_macros=no)])
+if test "${ac_cv_cpp_variadic_macros}" != "no"; then
+    AC_DEFINE(HAVE_VARIADIC_MACROS, 1, Support for variadic macros)
+fi
+dnl ---------------------------------------------------------------------------
+dnl Check for FE_CAN_2G_MODULATION
+dnl ---------------------------------------------------------------------------
+AC_CACHE_CHECK([for FE_CAN_2G_MODULATION],
+    [ac_cv_fe_can_2g_modulation],
+    [AC_TRY_COMPILE(
+         [#include <linux/dvb/frontend.h>],
+         [int a = FE_CAN_2G_MODULATION;],
+         ac_cv_fe_can_2g_modulation=yes,
+         ac_cv_fe_can_2g_modulation=no)])
+if test "${ac_cv_fe_can_2g_modulation}" != "no"; then
+    AC_DEFINE(HAVE_FE_CAN_2G_MODULATION, 1, Frontend enum exists for 2G modulation)
+fi
+dnl ---------------------------------------------------------------------------
+dnl Setup package directories
+dnl ---------------------------------------------------------------------------
+
+dnl Set PACKAGE SOURCE DIR in config.h.
+packagesrcdir=`cd $srcdir && pwd`
+
+dnl Set PACKAGE PREFIX
+if test "x${prefix}" = "xNONE"; then
+  packageprefix=${ac_default_prefix}
+else
+  packageprefix=${prefix}
+fi
+
+dnl Set PACKAGE DATA & DOC DIR
+packagedatadir=share
+packagedocdir=doc/${PACKAGE}
+
+dnl Subst PACKAGE_DATA_DIR.
+NO_PREFIX_PACKAGE_DATA_DIR="${packagedatadir}"
+AC_SUBST(NO_PREFIX_PACKAGE_DATA_DIR)
+PACKAGE_DATA_DIR="${packageprefix}/${packagedatadir}"
+AC_SUBST(PACKAGE_DATA_DIR)
+
+dnl Subst PACKAGE_DOC_DIR.
+NO_PREFIX_PACKAGE_DOC_DIR="${packagedocdir}"
+AC_SUBST(NO_PREFIX_PACKAGE_DOC_DIR)
+PACKAGE_DOC_DIR="${packageprefix}/${packagedocdir}"
+AC_SUBST(PACKAGE_DOC_DIR)
+
+AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${packageprefix}/${packagedatadir}", [Define this to data directory location])
+AC_DEFINE_UNQUOTED(PACKAGE_DOC_DIR, "${packageprefix}/${packagedocdir}", [Define this to Docs directory location])
+AC_DEFINE_UNQUOTED(PACKAGE_SOURCE_DIR, "${packagesrcdir}", [Define this to source directory location])
+
+dnl ---------------------------------------------------------------------------
+dnl Work out the Plugins path (Copied from xine-lib configure.ac)
+dnl ---------------------------------------------------------------------------
+if test "x$prefix" = xNONE; then
+   prefix="${ac_default_prefix}"
+fi
+if test "x$exec_prefix" = xNONE; then
+   exec_prefix='${prefix}'
+fi
+
+DVBSTREAMER_PLUGINDIR="$libdir/dvbstreamer/plugins"
+
+eval DVBSTREAMER_REL_PLUGINDIR="$DVBSTREAMER_PLUGINDIR"
+DVBSTREAMER_REL_PLUGINDIR=`eval echo "$DVBSTREAMER_REL_PLUGINDIR" | sed -e "s,^${prefix}/,,"`
+
+eval DVBSTREAMER_PLUGINPATH=`eval echo "$DVBSTREAMER_PLUGINDIR"`
+AC_DEFINE_UNQUOTED(DVBSTREAMER_PLUGINDIR,"$DVBSTREAMER_PLUGINPATH",[Define this to plugins directory location])
+AC_DEFINE_UNQUOTED(DVBSTREAMER_REL_PLUGINDIR,"$DVBSTREAMER_REL_PLUGINDIR",[Define this to plugin directory relative to execution prefix])
+AC_SUBST(DVBSTREAMER_PLUGINDIR)
+
+AC_OUTPUT([
+Makefile
+include/Makefile
+include/dvbpsi/Makefile
+src/dvbpsi/Makefile
+src/Makefile
+src/plugins/Makefile
+])
+

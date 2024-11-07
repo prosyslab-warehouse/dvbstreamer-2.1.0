@@ -1,0 +1,103 @@
+DVBStreamer - Plugins Ideas
+
+Load all plugins found in a certain directory.
+
+Plugin can add commands.
+Plugin can add Processors/Filters.
+Plugin can add output methods.
+
+struct Plugin_t
+{
+	unsigned int RequiredVersion;
+	char *name;        /* Name of the plugin */
+	char *version;     /* String describing the version of the plugin */
+	char *description; /* Description of the plugin */
+	char *author;      /* Author/Contact address for bugs */
+	Command_t *commands; /* NULL terminated array of commands or NULL for no commands */
+	PluginFeature_t *features; /* A PLUGIN_FEATURE_NONE terminated list of features or NULL for no features. */
+}
+
+struct Command_t
+{
+    char *command;
+    bool  tokenise;
+    int   minargs;
+    int   maxargs;
+    char *shorthelp;
+    char *longhelp;
+    void (*commandfunc)(int argc, char **argv);
+}
+
+
+PLUGIN_FEATURE_TYPE_NONE           0x00
+PLUGIN_FEATURE_TYPE_FILTER         0x01
+PLUGIN_FEATURE_TYPE_PATPROCESSOR   0x02
+PLUGIN_FEATURE_TYPE_PMTPROCESSOR   0x03
+PLUGIN_FEATURE_TYPE_DELIVERYMETHOD 0x04
+PLUGIN_FEATURE_TYPE_CHANNELCHANGE  0x05
+
+struct PluginFeature_t
+{
+	int type;
+	void *details;
+}
+
+type = PLUGIN_FEATURE_TYPE_FILTER
+details = An instance of the following structure:
+struct FilterHandler_t
+{
+	void (*InitFilter)(PIDFilter_t* filter);
+	void (*DeInitFilter)(PIDFilter_t* filter);
+}
+
+type = PLUGIN_FEATURE_TYPE_PATPROCESSOR
+details = A function pointer to a function with the following prototype:
+void PluginPATProcessor(dvbpsi_pat_t* newpat);
+
+type = PLUGIN_FEATURE_TYPE_PMTPROCESSOR
+details =  A function pointer to a function with the following prototype:
+void PluginPMTProcessor(dvbpsi_pmt_t* newpmt);
+
+type = PLUGIN_FEATURE_TYPE_DELIVERYMETHOD
+details = An instance of the following structure
+struct DeliveryMethodHandler_t
+{
+	void (*CanHandle)(char *mrl);
+	DeliveryMethodInstance_t* (*CreateInstance)(char *mrl);
+
+}
+
+mrl's will be in the form <delivery method>://<url>[,<options>]
+For example udp could be (ppd == Packets Per Datagram)
+udp://localhost:1234,tos=25,ppd=7
+
+Implementors should consider the following structure as the 'base class' and
+should extend it with the state they require for the output method.
+
+struct DeliveryMethodInstance_t
+{
+	void (*SendPacket)(DeliveryMethodInstance *this, TSPacket_t packet);
+	void (*DestroyInstance)(DeliveryMethodInstance_t *this);
+}
+
+
+For example:
+
+struct UDPOutputDeliveryMethodInstance_t
+{
+	void (*SendPacket)(DeliveryMethodInstance_t *this, TSPacket_t packet);
+	void (*DestroyInstance)(DeliveryMethodInstance_t *this);
+	int tos;
+	int packetsPerDatagram;
+	Socket socketFD;
+	int packetCount;
+	char *buffer;
+}
+
+type = PLUGIN_FEATURE_TYPE_CHANNELCHANGE
+details = A function pointer to a function with the following prototype:
+void PluginChannelChanged(Multiplex_t *newMultiplex, Service_t *newService);
+
+PluginChannelChanged function pointer will be called every time the primary service
+filter is updated. newMultiplex will contain the current multiplex and newService
+will contain the currentService.

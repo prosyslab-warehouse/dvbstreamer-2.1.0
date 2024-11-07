@@ -1,0 +1,65 @@
+# ------------------------------------------------------------------------
+# r813 | charrea6 | 2012-02-19 14:44:30 +0100(dom, 19 feb 2012) | 1 line
+# 
+# Remove markup characters from service names - many thanks Manuel Borchers
+# ------------------------------------------------------------------------
+Index: trunk/src/standard/dvb/sdtprocessor.c
+===================================================================
+--- trunk/src/standard/dvb/sdtprocessor.c	(revisione 812)
++++ trunk/src/standard/dvb/sdtprocessor.c	(revisione 813)
+@@ -75,6 +75,7 @@
+ static void SubTableHandler(void * state, dvbpsi_handle demuxHandle, uint8_t tableId, uint16_t extension);
+ static void SDTHandler(void* arg, dvbpsi_sdt_t* newSDT);
+ static ServiceType ConvertDVBServiceType(int type);
++static void removeControlCodes(char *str);
+ 
+ /*******************************************************************************
+ * Global variables                                                             *
+@@ -173,6 +174,7 @@
+ 
+                     if (name)
+                     {
++                        removeControlCodes(name);
+                         /* Only update the name if it has changed */
+                         if (strcmp(name, service->name))
+                         {
+@@ -283,3 +285,27 @@
+     }
+     return result;
+ }
++
++static void removeControlCodes(char *str)
++{
++    // + 1 to also copy the terminating NULL character! otherwise the loop may go
++    // beyond the new end of the string
++    int len = strlen(str) + 1;
++    int i = 0, prev_i = 0;
++    u_int32_t ch;
++
++    do
++    {
++        ch = UTF8_nextchar(str, &i);
++        if ((ch >= 0x80) && (ch <= 0x9f))
++        {
++            memmove(&str[prev_i], &str[i], len - i);
++            len -= i - prev_i;
++            i = prev_i;
++        }
++        else
++        {
++            prev_i = i;
++        }
++    } while(ch != 0u);
++}
+Index: trunk/README
+===================================================================
+--- trunk/README	(revisione 812)
++++ trunk/README	(revisione 813)
+@@ -339,6 +339,7 @@
+                    instead.
+ Issa Gorissen    - Donated a TeVII S660 for help with DVB-S2 - Many thanks
+ Luca Dasseto     - Also donated a TeVII S660 for help with DVB-S2 - Many thanks
++Manuel Borchers  - Testing of service name markup characters removal.
+ 
+ VideoLan libdvbpsi Team for the excellent libdvbpsi. 
+ (http://www.videolan.org/developers/libdvbpsi.html)

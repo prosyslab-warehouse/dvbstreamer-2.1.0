@@ -1,0 +1,16 @@
+# ------------------------------------------------------------------------
+# r807 | charrea6 | 2011-07-04 22:46:14 +0200(lun, 04 lug 2011) | 1 line
+# 
+# #3216252 - invalid free() on string literal
+# ------------------------------------------------------------------------
+Index: trunk/src/plugins/freesat_huffman.c
+===================================================================
+--- trunk/src/plugins/freesat_huffman.c	(revisione 806)
++++ trunk/src/plugins/freesat_huffman.c	(revisione 807)
+@@ -146,5 +146,5 @@
+         uncompressed[p] = 0;
+         return uncompressed;
+     }
+-    return "";
++    return strdup("");
+ }

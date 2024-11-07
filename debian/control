@@ -1,0 +1,20 @@
+Source: dvbstreamer
+Priority: extra
+Maintainer: A Mennucc1 <mennucc1@debian.org>
+Build-Depends: dpkg-dev (>= 1.14.27), debhelper (>= 7), quilt (>= 0.46-4.1),
+ autoconf, autotools-dev, automake, libtool, cdbs, libev-dev,
+ libeditreadline-dev, sqlite3, libsqlite3-dev, libyaml-dev, libltdl-dev,
+ zlib1g-dev, dh-autoreconf
+Standards-Version: 3.9.3.0
+Section: video
+Homepage: http://dvbstreamer.sf.net/
+
+Package: dvbstreamer
+Section: video
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: a console based streamer for DVB/ATSC service(s)
+ DVBStreamer is a console based application to stream DVB/ATSC service(s)
+ over UDP or to a file. It is more that just an app to stream AV
+ though and feature a simple plugin architecture to allow
+ more features to be added.

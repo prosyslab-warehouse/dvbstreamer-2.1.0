@@ -1,0 +1,18 @@
+usr_share_doc.patch
+usr_share_doc_in.patch
+
+##libev.patch
+pkgincludedir.patch
+
+svn_803.diff
+svn_804.diff
+svn_805.diff
+svn_806.diff
+svn_807.diff
+svn_809.diff
+svn_812.diff
+svn_813.diff
+svn_814.diff
+
+## does not apply, needs some care
+#svn_819.diff

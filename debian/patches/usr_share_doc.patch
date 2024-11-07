@@ -1,0 +1,14 @@
+--- dvbstreamer-2~svn770.orig/Makefile.am
++++ dvbstreamer-2~svn770/Makefile.am
+@@ -2,7 +2,10 @@
+ 
+ SUBDIRS = include include/dvbpsi src/dvbpsi src src/plugins
+ 
+-dvbstreamerdocdir = ${prefix}/doc/DVBStreamer
++
++#AM: this is the file system standard
++dvbstreamerdocdir = ${prefix}/share/doc/dvbstreamer
++
+ dvbstreamerdoc_DATA = \
+ 	README\
+ 	COPYING\

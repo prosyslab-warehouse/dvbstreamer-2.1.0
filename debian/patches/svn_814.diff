@@ -1,0 +1,22 @@
+# ------------------------------------------------------------------------
+# r814 | charrea6 | 2012-02-19 15:06:29 +0100(dom, 19 feb 2012) | 1 line
+# 
+# Remove requirement on ncurses/termcap
+# ------------------------------------------------------------------------
+Index: trunk/configure.in
+===================================================================
+--- trunk/configure.in	(revisione 813)
++++ trunk/configure.in	(revisione 814)
+@@ -149,11 +149,7 @@
+ dnl ---------------------------------------------------------------------------
+ AC_CHECK_HEADER([readline/readline.h], [], [AC_MSG_FAILURE([readline header file not found])])
+ 
+-AC_CHECK_LIB([readline], [readline], [READLINE_TERMCAP="-lncurses"],
+-    [AC_CHECK_LIB([readline], [readline], [READLINE_TERMCAP="-ltermcap"],
+-        [AC_MSG_FAILURE([readline not found])],
+-        [-ltermcap])],
+-    [-lncurses])
++AC_CHECK_LIB([readline], [readline], [], [])
+ 
+ AC_SUBST(READLINE_TERMCAP)
+ 

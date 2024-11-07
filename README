@@ -1,0 +1,362 @@
+About
+-----
+DVBStreamer is an console based application to stream an entire DVB service
+over UDP.
+It differs from other DVB streaming applications by the use of the DVB-SI to
+work out the PIDs to stream and correctly stream services which use a separate
+PCR PID.
+
+Requirements
+------------
+DVBStreamer requires the following libraries:
+ 
+ - sqlite3 (>= 3.3)
+ - readline 
+ - libltdl (>= 2.2.6b)
+ - libyaml 
+
+
+Installation
+------------
+
+After installing the dependancies and extracting the source run configure to 
+setup the makefile. To do this enter the following at the command prompt (add 
+any options you would normal add when building using configure).
+
+./configure
+
+When configure has finished and created all the makefiles its just a matter of 
+running make to build the application.
+
+make
+
+Once make has finished doing its thing the next step is installing dvbstreamer 
+to you chosen location. You will probably want to do this step as root.
+
+make install
+
+Setup
+-----
+Before you can actually start to use dvbstreamer you need to initialise it's 
+database of service to do this you'll need a channels.conf file produces by the 
+linuxtv.org utility scan. Go here if you need help with scan.
+
+When you have a channels.conf file you then need to run setupdvbstreamer with 
+the file you've just created.
+
+To setup dvbstreamer to use a terrestrial tuner on adapter 0 use the following 
+command:
+
+setupdvbstreamer -t channels.conf
+
+To setup dvbstreamer to use a satellite tuner on adapter 0 use the following 
+command:
+
+setupdvbstreamer -s channels.conf
+
+To setup dvbstreamer to use a cable tuner on adapter 0 use the following 
+command:
+
+setupdvbstreamer -c channels.conf
+        
+If you are setting up an adapter other than 0 add the -a <adapter number> option
+to the commands above.
+
+If you have 2 or more cards of the same type in your system you can link the 
+first cards database to the second cards database by simply creating a hard link
+in the dvbstreamer directory in your home directory ~/.dvbstreamer
+
+for example to use the same database for card 1 and 2 you would do the following
+
+ln ~/.dvbstreamer/adapter1.db ~/.dvbstreamer/adapter2.db
+
+
+Running
+--------
+  * Starting DVBStreamer
+
+  * Using a Startup file
+
+  * MRLs
+
+Starting DVBStreamer
+--------------------
+To start dvbstreamer you need to specify an IP address and a UDP port where the 
+selected service will be streamed to. You can also optionally specify which 
+adapter to use using the -a option.
+
+For example to start dvbstreamer using adapter 2 and send the selected service 
+to 192.168.1.1 and UDP port 1234 you would use the following command
+
+dvbstreamer -a 2 -o udp://192.168.1.1:1234
+
+To select a service to stream use the select command (see the Commands section 
+for more information).
+
+For example:
+
+select "BBC ONE"
+
+Will tune to the multiplex that contains BBC ONE and stream all the packets 
+belonging to that service to 192.168.1.1:1234 over udp.
+
+The stats command can be used to verify that packets are being processed and set
+to the selected output destination.
+
+For information on other commands see the Commands section.
+
+Start up files
+--------------
+
+Start up files can be useful for doing things that you always want to be setup 
+before you get to the dvbstreamer prompt. For example you may always want the 
+TDT and EIT tables redirected to a specific UDP port on your local computer.
+
+To use a startup file simple add the -f option on the command line specifying 
+the file to read.
+
+For example to use the file eitredirect to redirect EIT tables to port 1235 on 
+your local computer you would use the following:
+
+dvbstreamer -o udp://localhost:1234 -f eitredirect
+
+And in eitredirect you would have
+
+# Redirect EIT tables to port 1235 on localhost
+addmf eitoutput udp://localhost:1235
+addmfpid eitoutput 0x12
+
+Its as simple as that, you can use all the commands that you can use on the 
+dvbstreamer prompt.
+
+MRLs (Media Resource Locator)
+-----------------------------
+
+These are in the form <transport>://<details> and are used to specified how and 
+where to send the output of a service filter or a manual output.
+
+The following MRLs are currently supported (although this list can be extended 
+by plugins):
+
+Transport Usage           Description
+-------------------------------------
+udp       udp://host:port Packets are sent via UDP (7 TS packets per UDP packet) 
+                          to the specified port on the host.
+file      file://filepath Packets are written to the specified file.
+null      null://         Packets are thrown away.
+
+Commands
+--------
+quit............Exit the program
+lsservices......List all services or for a specific multiplex.
+lsmuxes.........List multiplexes
+select..........Select a new service to stream
+current.........Print out the service currently being streamed.
+serviceinfo.....Display information about a service.
+pids............List the PIDs for a specified service
+stats...........Display the stats for the PAT,PMT and service PID filters
+lssfs...........List all secondary service filters
+setsf...........Select a service to stream to a secondary service output
+setsfmrl........Set the service filter's MRL
+setsfavsonly....Enable/disable streaming of Audio/Video/Subtitles only.
+festatus........Displays the status of the tuner.
+scan............Scan the specified multiplex for services.
+help............Display the list of commands or help on a specific command
+lsplugins.......List loaded plugins.
+plugininfo......Display the information about a plugin
+
+quit
+----
+Usage:  quit
+
+Exit the program, can be used in the startup file to stop further processing.
+
+lsservices
+----------
+Usage:  lsservices [mux | <multiplex uid>]
+
+Lists all the services currently in the database if no multiplex is specified or
+if "mux" is specified only the services available of the current mux or if a 
+uid is specified only the services available on that multiplex.
+
+lsmuxes
+-------
+Usage:  lsmuxes
+
+List all multiplexes.
+
+select
+------
+Usage:  select <service name>
+
+Sets the specified service as the service to be streamed to the primary output, 
+this may mean tuning to a different multiplex.
+
+current
+-------
+Usage:  current
+
+Shows the service that is currently being streamed to the default output.
+Back serviceinfo
+
+Usage:  serviceinfo <service name>
+
+Displays running status, conditional access status and whether EPG information 
+is present for the specified service. Note only services in the current 
+multiplex can be queried.
+
+pids
+----
+Usage:  pids <service name>
+
+List the PIDs for the specified service.
+
+stats
+-----
+Usage:  stats
+
+Display the number of packets processed for the PSI/SI filters and the number of
+packets filtered for each service filter and manual output.
+
+addsf
+-----
+Usage:  addsf <output name> <mrl>
+
+Adds a new destination for sending a secondary service to.
+
+rmsf
+----
+Usage:  rmsf <output name>
+
+Remove a destination for sending secondary services to.
+
+lssfs
+-----
+Usage:  lssfs
+
+List all secondary service filters their names, destinations and currently 
+selected service.
+
+setsf
+-----
+Usage:  setsf <output name> <service name>
+
+Stream the specified service to the secondary service output.
+
+setsfmrl
+--------
+Usage:  setsfmrl <output name> <mrl>
+
+Change the destination for packets sent to this service filters output. If the 
+MRL cannot be parsed no change will be made to the service filter.
+
+setsfavsonly
+------------
+Usage:  setsfavsonly <output name> on|off
+
+Enabling AVS Only cause the PMT to be rewritten to only include the first video 
+stream, normal audio stream and the subtitles stream only for the specified 
+service output.
+
+festatus
+--------
+Usage:  festatus
+
+Displays whether the front end is locked, the bit error rate and signal to noise
+ratio and the signal strength
+
+scan
+----
+Usage:  scan <mulitplex>
+
+Tunes to the specified multiplex and wait 5 seconds for PAT/PMT/SDT.
+
+help
+----
+Usage:  help [<command>]
+
+List all available commands or displays specific help for the command specifed.
+
+lsplugins
+---------
+Usage:  lsplugins
+
+List all plugins that where loaded at startup.
+
+plugininfo
+----------
+Usage:  plugininfo <pluginname>
+
+Displays the version, author and descriptor for a specific plugin.
+
+
+Plugins
+-------
+Plugins allow DVBStreamer to be extended beyond the simple filtering and
+streaming of DVB services.
+
+Plugins can:
+- Add new delivery methods (check out fileoutput.c for a simple example of a
+  delivery method plugin)
+- Add new commands.
+- Add new PID filters (for example to extract EPG data)
+- Detect when the service/multiplex is changed.
+
+The commands lsplugins and plugininfo can be used to inspected the loaded 
+plugins.
+
+Documentation for the interfaces into DVBStreamer can be generated using the
+doxygen and the doxygen.config file in the base directory of dvbstreamer.
+
+Help/More Information
+-------------------
+See the wiki at http://dvbstreamer.sourceforge.net/mediawiki/index.php/Main_Page
+
+Bugs
+----
+Please report all bugs to the sourceforge forums.
+http://sourceforge.net/tracker/?group_id=164687&atid=832723
+
+Credits
+-------
+Adam Charrett    - Author
+Tero Pelander    - IPv6 support along with several patches and tested DVB-C.
+Thomas Sattler   - Lots of testing for 0.5.
+Nicholas Humfrey - Power PC testing and patch.
+Alex Luccisano   - DVB-S testing.
+Jonathan Isom    - ATSC testing.
+Michael Treuer   - Patch to DVB text code.
+Steve VanDeBogart- Several patches and the traffic monitor plugin.
+Ramsey Ammar     - DVBStreamer first donor :-) many thanks.
+Paul Kelly       - Patch to make festatus command work on DVB-S
+Louis Croisez    - Help finding critical MRL bug and other testing.
+Chris Allison    - Patch to add Series/Content ids to xmltv output.
+Marcel Ritter    - Bug fix
+A C G Mennucc    - Several bug fixes/patches.
+Tom Albers       - Test stream and testing of patch for support of extended 
+                   event descriptors.
+Samuli Suominen  - Patch to remove use of in-tree libltdl and use the system copy
+                   instead.
+Issa Gorissen    - Donated a TeVII S660 for help with DVB-S2 - Many thanks
+Luca Dasseto     - Also donated a TeVII S660 for help with DVB-S2 - Many thanks
+Manuel Borchers  - Testing of service name markup characters removal.
+
+VideoLan libdvbpsi Team for the excellent libdvbpsi. 
+(http://www.videolan.org/developers/libdvbpsi.html)
+
+Mythtv Team for working out the huffman decode tables etc for the freesat epg.
+
+History
+-------
+2.0 Next Gen Release
+1.1 Ubuntu build fix Release
+1.0 The first .0 Release
+0.9 EPG Release
+0.8 ATSC/DVB-S Release
+0.7 Remote interface Release
+0.6 Stability Release
+0.5 Plugin Release
+0.4 Daemon mode
+0.3 Service Addition/Removal
+0.2 Add new commands (addoutput etc)
+0.1 First public release

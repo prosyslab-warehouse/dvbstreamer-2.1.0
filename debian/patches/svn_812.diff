@@ -1,0 +1,25 @@
+# ------------------------------------------------------------------------
+# r812 | charrea6 | 2012-02-19 14:42:36 +0100(dom, 19 feb 2012) | 1 line
+# 
+# Make sure to release references to deleted services
+# ------------------------------------------------------------------------
+Index: trunk/src/cache.c
+===================================================================
+--- trunk/src/cache.c	(revisione 811)
++++ trunk/src/cache.c	(revisione 812)
+@@ -790,6 +790,7 @@
+             ObjectRefDec(cachedPIDs[deletedIndex]);
+         }
+ 
++        
+         cachedServicesCount --;
+         /* Remove the deleted service from the list */
+         for (i = deletedIndex; i < cachedServicesCount; i ++)
+@@ -942,6 +943,7 @@
+             LogModule(LOG_DEBUG, CACHE, "Deleting service %s (0x%04x)\n", service->name, service->id);
+             ServiceDelete(service);
+             ProgramInfoRemove(service);
++            ServiceRefDec(service);
+             break;
+     }
+     DBaseTransactionCommit();

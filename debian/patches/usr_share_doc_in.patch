@@ -1,0 +1,13 @@
+Index: dvbstreamer-2.0.0rc1/Makefile.in
+===================================================================
+--- dvbstreamer-2.0.0rc1.orig/Makefile.in	2010-09-01 16:36:10.000000000 +0200
++++ dvbstreamer-2.0.0rc1/Makefile.in	2010-09-01 16:37:18.000000000 +0200
+@@ -253,7 +253,7 @@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+ SUBDIRS = include include/dvbpsi src/dvbpsi src src/plugins
+-dvbstreamerdocdir = ${prefix}/doc/DVBStreamer
++dvbstreamerdocdir = ${prefix}/share/doc/dvbstreamer
+ dvbstreamerdoc_DATA = \
+ 	README\
+ 	COPYING\
